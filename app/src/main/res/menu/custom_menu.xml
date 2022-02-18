@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/city"
+        android:title="ActionBar Spinner"
+        app:actionViewClass="android.widget.Spinner"
+        app:showAsAction="always"
+        android:orderInCategory = "0"/>
+    <item
+        android:id="@+id/space1"
+        android:title="space1"
+        app:showAsAction="always"
+        android:orderInCategory = "1"/>
+    <item
+        android:id="@+id/space2"
+        android:title="space2"
+        app:showAsAction="always"
+        android:orderInCategory = "2"/>
+
+    <item
+        android:id="@+id/qr_code"
+        android:title="QrCode"
+        android:icon="@drawable/qrcode"
+        app:showAsAction="always"
+        android:orderInCategory = "3"/>
+
+</menu>

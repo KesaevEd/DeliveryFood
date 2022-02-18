@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">PizzaBoBo</string>
+    <string name="pizza">Пицца</string>
+    <string name="combo">Комбо</string>
+    <string name="drinks">Напитки</string>
+    <string name="desert">Десерт</string>
+</resources>
