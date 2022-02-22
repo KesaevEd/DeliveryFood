@@ -1,22 +1,22 @@
-package com.example.pizzabobo
+package com.example.pizzabobo.Adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pizzabobo.databinding.BannersItemBinding
-import com.example.pizzabobo.databinding.CategoriesItemBinding
+import com.example.pizzabobo.Model.Categories
+import com.example.pizzabobo.Model.Category
+import com.example.pizzabobo.R
 import java.util.*
+import kotlin.collections.ArrayList
 
-class CategoriesAdapter:RecyclerView.Adapter<CategoriesAdapter.CategoriesHolder>() {
-
-    val categoriesList = ArrayList<Category>()
+class CategoriesAdapter(val context:Context, private val categoriesList: List<Category>):RecyclerView.Adapter<CategoriesAdapter.CategoriesHolder>() {
 
     class CategoriesHolder(item: View): RecyclerView.ViewHolder(item) {
-        val binding = CategoriesItemBinding.bind(item)
-        fun bind(category: Category) = with(binding){
-            categoryName.text = category.category_name
-        }
+
+        val categoryName: TextView = item.findViewById(R.id.category_name)
 
     }
 
@@ -26,15 +26,12 @@ class CategoriesAdapter:RecyclerView.Adapter<CategoriesAdapter.CategoriesHolder>
     }
 
     override fun onBindViewHolder(holder: CategoriesHolder, position: Int) {
-        holder.bind(categoriesList[position])
+
+        holder.categoryName.text = categoriesList[position].title.toString()
     }
 
     override fun getItemCount(): Int {
         return categoriesList.size
     }
 
-    fun addCategory(category: Category){
-        categoriesList.add(category)
-        notifyDataSetChanged()
-    }
 }

@@ -1,5 +1,8 @@
 package com.example.pizzabobo
 
+import android.app.AlertDialog
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
@@ -8,34 +11,44 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuItemCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.pizzabobo.Adapter.BannersAdapter
+import com.example.pizzabobo.Adapter.CategoriesAdapter
+import com.example.pizzabobo.Adapter.FoodAdapter
+import com.example.pizzabobo.Common.Common
+import com.example.pizzabobo.DB.DbManagerCategories
+import com.example.pizzabobo.DB.DbManagerFood
+import com.example.pizzabobo.DbAdapter.CategoriesDbAdapter
+import com.example.pizzabobo.DbAdapter.FoodDbAdapter
+import com.example.pizzabobo.Interface.RetrofitServices
+import com.example.pizzabobo.Model.Banner
+import com.example.pizzabobo.Model.Categories
+import com.example.pizzabobo.Model.Products
 import com.example.pizzabobo.databinding.ActivityMain2Binding
-import com.google.android.material.bottomnavigation.BottomNavigationView
-
+import dmax.dialog.SpotsDialog
+import retrofit2.Callback
+import retrofit2.Response
+import java.lang.Exception
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMain2Binding
+    lateinit var mService: RetrofitServices
+    lateinit var categoriesAdapter: CategoriesAdapter
+    lateinit var foodAdapter: FoodAdapter
+    lateinit var dialog: AlertDialog
+    lateinit var layoutManagerCategories: LinearLayoutManager
+    lateinit var layoutManagerFood: LinearLayoutManager
+
+    val dbManagerFood = DbManagerFood(this@MainActivity)
+    var foodDbAdapter = FoodDbAdapter(ArrayList())
+
+    val dbManagerCategories = DbManagerCategories(this@MainActivity)
+    var categoriesDbAdapter = CategoriesDbAdapter(ArrayList())
 
     private val bannerAdapter = BannersAdapter()
     private val bannersImageIdList =
         listOf(R.drawable.pngegg, R.drawable.pngegg__1_, R.drawable.pngegg__2_)
-
-    private val categoriesAdapter = CategoriesAdapter()
-    private val categoriesList = listOf("Пицца", "Комбо", "Напитки", "Десерт")
-
-    private val foodAdapter = FoodAdapter()
-    private val foodImageIdList =
-        listOf(R.drawable.pizza1, R.drawable.pizza2, R.drawable.pizza3, R.drawable.pizza4, R.drawable.combo1, R.drawable.combo2, R.drawable.combo3)
-    private val foodTitleList =
-        listOf("Ветчина и грибы", "Баварские колбаски", "Нежный лосось", "Четыре сыра", "Сытный обед", "Быстрый ланч", "Быстрый ланч 2")
-    private val foodDescriptionList = listOf(
-        "Ветчина, помидоры, увеличенная порция мацареллы, томатный соус",
-        "Ветчина, баварские колбаски, пикантная пеперони, томатный соус",
-        "Лосось, оливки, соус чедер",
-        "Ветчина, помидоры, увеличенная порция мацареллы, сыр эмменталь, сыр горгонзола, сыр пармезан",
-        "Шашлык, картошка фри, овощи", "Бургер, кола, картоха", "Бурито, кола, картошка"
-    )
-    private val foodPriceList = listOf("от 345 р", "от 345 р", "от 345 р", "от 345 р", "от 420 р", "от 230 р", "от 230 р")
 
     private val cities = arrayOf("Москва", "Санкт-Петербург", "Екатеринбург", "Сочи", "Пермь")
 
@@ -47,48 +60,168 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMain2Binding.inflate(layoutInflater)
 
         setContentView(binding.root)
-        init()
 
-        binding.butNav.setOnNavigationItemReselectedListener {
-            when(it.itemId){
-                R.id.navigation_menu ->{}
-                R.id.navigation_profile ->{Toast.makeText(this, "Отсутствует подключение к интернету", Toast.LENGTH_SHORT).show()}
-                R.id.navigation_basket ->{Toast.makeText(this, "Отсутствует подключение к интернету", Toast.LENGTH_SHORT).show()}
+        dbManagerFood.openDb()
+        dbManagerCategories.openDb()
+        initRecViewes()
+
+
+        binding.apply {
+
+            mService = Common.retrofitService
+            rvCategories.setHasFixedSize(true)
+            layoutManagerCategories =
+                LinearLayoutManager(this@MainActivity, RecyclerView.HORIZONTAL, false)
+            rvCategories.layoutManager = layoutManagerCategories
+
+            rvFood.setHasFixedSize(true)
+            layoutManagerFood = LinearLayoutManager(this@MainActivity)
+            rvFood.layoutManager = layoutManagerFood
+
+            dialog = SpotsDialog.Builder().setCancelable(true).setContext(this@MainActivity).build()
+
+            if (verifyAvailableNetwork(this@MainActivity)) {
+                dialog.show()
+                getCategories()
+                getSandwiches()
+                dialog.dismiss()
+            } else {
+                dialog.show()
+                Toast.makeText(this@MainActivity, "no internet", Toast.LENGTH_SHORT).show()
+                fillDbAdapters()
+                dialog.dismiss()
             }
+
+        }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        dbManagerFood.openDb()
+        dbManagerCategories.openDb()
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        dbManagerFood.closeDb()
+        dbManagerCategories.closeDb()
+    }
+
+
+    private fun getCategories() {
+        binding.apply {
+            mService.getMenu().enqueue(object : Callback<Categories> {
+
+                override fun onResponse(
+                    call: retrofit2.Call<Categories>,
+                    response: Response<Categories>
+                ) {
+                    categoriesAdapter = CategoriesAdapter(baseContext, response.body()!!.categories)
+                    categoriesAdapter.notifyDataSetChanged()
+                    rvCategories.adapter = categoriesAdapter
+
+                    val categoriesList = response.body()!!.categories
+                    if(dbManagerCategories.checkDbOnFilling()){
+                        for(i in categoriesList.indices){
+                            dbManagerCategories.updateItem(categoriesList[i].title, i)
+                        }
+                    }else{
+                        for(i in categoriesList.indices){
+                            dbManagerCategories.insertToDb(categoriesList[i].title)
+                        }
+                    }
+                }
+
+                override fun onFailure(
+                    call: retrofit2.Call<Categories>,
+                    t: Throwable
+                ) {
+
+                }
+            })
         }
     }
 
 
-    private fun init() {
+    private fun getSandwiches() {
+        val dbManagerFood = DbManagerFood(this@MainActivity)
+        dbManagerFood.openDb()
+        binding.apply {
+
+            mService.getSandwichesList().enqueue(object : Callback<Products> {
+                override fun onResponse(
+                    call: retrofit2.Call<Products>,
+                    response: Response<Products>
+                ) {
+                    foodAdapter = FoodAdapter(baseContext, response.body()!!.products)
+                    foodAdapter.notifyDataSetChanged()
+                    rvFood.adapter = foodAdapter
+
+
+                    val foodList = response.body()!!.products
+
+                    if (dbManagerFood.checkDbOnFilling()) {
+
+                        for (i in 0 until response.body()!!.products.size) {
+                            var detailText = foodList[i].detailText
+                            val re = Regex("[^%.А-Яа-я0-9 ]")
+                            detailText = detailText?.let { re.replace(it, "") }
+                            dbManagerFood.updateItem(
+                                foodList[i].name,
+                                detailText,
+                                foodList[i].offers[0].price.toString(),
+                                i
+                            )
+                        }
+                    } else {
+                        for (i in 0 until response.body()!!.products.size) {
+                            var detailText = foodList[i].detailText
+                            val re = Regex("[^%.А-Яа-я0-9 ]")
+                            detailText = detailText?.let { re.replace(it, "") }
+                            dbManagerFood.insertToDb(
+                                foodList[i].name,
+                                detailText,
+                                foodList[i].offers[0].price.toString()
+                            )
+                        }
+                    }
+
+                }
+
+                override fun onFailure(call: retrofit2.Call<Products>, t: Throwable) {
+
+                }
+
+            })
+        }
+    }
+
+
+    fun initRecViewes() {
+        val rvFood: RecyclerView = findViewById(R.id.rvFood)
+        rvFood.layoutManager =
+            LinearLayoutManager(this)
+        rvFood.adapter = foodDbAdapter
+        val rvCategories: RecyclerView = findViewById(R.id.rvCategories)
+        rvCategories.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+        rvCategories.adapter = categoriesDbAdapter
         binding.apply {
             rvBanners.layoutManager =
                 LinearLayoutManager(this@MainActivity, RecyclerView.HORIZONTAL, false)
             rvBanners.adapter = bannerAdapter
-            for (i in 0 until bannersImageIdList.size) {
-                val banner = Banner(bannersImageIdList[i])
+            for (element in bannersImageIdList) {
+                val banner = Banner(element)
                 bannerAdapter.addBanner(banner)
-            }
-            rvCategories.layoutManager =
-                LinearLayoutManager(this@MainActivity, RecyclerView.HORIZONTAL, false)
-            rvCategories.adapter = categoriesAdapter
-            for (i in 0 until categoriesList.size) {
-                val category = Category(categoriesList[i])
-                categoriesAdapter.addCategory(category)
-            }
-
-            rvFood.layoutManager = LinearLayoutManager(this@MainActivity, RecyclerView.VERTICAL, false)
-            rvFood.adapter = foodAdapter
-            for (i in 0 until foodTitleList.size) {
-                val food = Food(
-                    foodImageIdList[i],
-                    foodTitleList[i],
-                    foodDescriptionList[i],
-                    foodPriceList[i]
-                )
-                foodAdapter.addFood(food)
             }
 
         }
+    }
+
+    fun fillDbAdapters() {
+        categoriesDbAdapter.updateAdapter(dbManagerCategories.readDbData())
+        foodDbAdapter.updateAdapter(dbManagerFood.readDbData())
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -101,7 +234,7 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    private fun citySpinner(spinner: Spinner, cities: Array<String>){
+    private fun citySpinner(spinner: Spinner, cities: Array<String>) {
         spinner.adapter = ArrayAdapter(this, R.layout.spinner_custom_text, cities)
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -115,5 +248,12 @@ class MainActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
+    }
+
+    fun verifyAvailableNetwork(activity: AppCompatActivity): Boolean {
+        val connectivityManager =
+            activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
     }
 }

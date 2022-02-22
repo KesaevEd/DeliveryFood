@@ -1,9 +1,11 @@
-package com.example.pizzabobo
+package com.example.pizzabobo.Adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.pizzabobo.Model.Banner
+import com.example.pizzabobo.R
 import com.example.pizzabobo.databinding.BannersItemBinding
 
 class BannersAdapter: RecyclerView.Adapter<BannersAdapter.BannersHolder>() {
