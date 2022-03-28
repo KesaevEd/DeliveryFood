@@ -1,7 +1,7 @@
-package com.example.pizzabobo.Common
+package com.example.DeliveryFood.Common
 
-import com.example.pizzabobo.Interface.RetrofitServices
-import com.example.pizzabobo.Retrofit.RetrofitClient
+import com.example.DeliveryFood.Interface.RetrofitServices
+import com.example.DeliveryFood.Retrofit.RetrofitClient
 
 object Common {
     private val BASE_URL = "https://mcdonalds.ru/api/"

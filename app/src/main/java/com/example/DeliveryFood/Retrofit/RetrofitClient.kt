@@ -1,4 +1,4 @@
-package com.example.pizzabobo.Retrofit
+package com.example.DeliveryFood.Retrofit
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

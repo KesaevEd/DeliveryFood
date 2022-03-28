@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PizzaBoBo</string>
+    <string name="app_name">DeliveryFood</string>
     <string name="pizza">Пицца</string>
     <string name="combo">Комбо</string>
     <string name="drinks">Напитки</string>

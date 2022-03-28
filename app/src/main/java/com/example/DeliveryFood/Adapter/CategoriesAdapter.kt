@@ -1,4 +1,4 @@
-package com.example.pizzabobo.Adapter
+package com.example.DeliveryFood.Adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -6,11 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pizzabobo.Model.Categories
-import com.example.pizzabobo.Model.Category
-import com.example.pizzabobo.R
-import java.util.*
-import kotlin.collections.ArrayList
+import com.example.DeliveryFood.Model.Category
+import com.example.DeliveryFood.R
 
 class CategoriesAdapter(val context:Context, private val categoriesList: List<Category>):RecyclerView.Adapter<CategoriesAdapter.CategoriesHolder>() {
 

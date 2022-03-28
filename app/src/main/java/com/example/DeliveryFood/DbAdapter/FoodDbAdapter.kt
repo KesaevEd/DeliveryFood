@@ -1,12 +1,12 @@
-package com.example.pizzabobo.DbAdapter
+package com.example.DeliveryFood.DbAdapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pizzabobo.DB.ListItemFood
-import com.example.pizzabobo.R
+import com.example.DeliveryFood.DB.ListItemFood
+import com.example.DeliveryFood.R
 
 class FoodDbAdapter(var foodList: ArrayList<ListItemFood>) :
     RecyclerView.Adapter<FoodDbAdapter.FoodHolder>() {

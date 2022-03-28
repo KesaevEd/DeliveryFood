@@ -1,4 +1,4 @@
-package com.example.pizzabobo.Adapter
+package com.example.DeliveryFood.Adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,12 +7,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pizzabobo.DB.ListItemFood
-import com.example.pizzabobo.Model.Category
-import com.example.pizzabobo.Model.Offers
-import com.example.pizzabobo.Model.Products
-import com.example.pizzabobo.Model.Sandwich
-import com.example.pizzabobo.R
+import com.example.DeliveryFood.Model.Sandwich
+import com.example.DeliveryFood.R
 import com.squareup.picasso.Picasso
 
 class FoodAdapter(val context: Context, private val sandwichesList: List<Sandwich>) :

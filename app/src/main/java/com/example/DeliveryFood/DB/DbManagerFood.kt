@@ -1,11 +1,11 @@
-package com.example.pizzabobo.DB
+package com.example.DeliveryFood.DB
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.provider.BaseColumns
-import com.example.pizzabobo.Model.Products
+import com.example.DeliveryFood.Model.Products
 
 class DbManagerFood(context: Context) {
 

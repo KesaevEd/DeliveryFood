@@ -1,4 +1,4 @@
-package com.example.pizzabobo
+package com.example.DeliveryFood
 
 import android.app.AlertDialog
 import android.content.Context
@@ -11,23 +11,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuItemCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pizzabobo.Adapter.BannersAdapter
-import com.example.pizzabobo.Adapter.CategoriesAdapter
-import com.example.pizzabobo.Adapter.FoodAdapter
-import com.example.pizzabobo.Common.Common
-import com.example.pizzabobo.DB.DbManagerCategories
-import com.example.pizzabobo.DB.DbManagerFood
-import com.example.pizzabobo.DbAdapter.CategoriesDbAdapter
-import com.example.pizzabobo.DbAdapter.FoodDbAdapter
-import com.example.pizzabobo.Interface.RetrofitServices
-import com.example.pizzabobo.Model.Banner
-import com.example.pizzabobo.Model.Categories
-import com.example.pizzabobo.Model.Products
-import com.example.pizzabobo.databinding.ActivityMain2Binding
+import com.example.DeliveryFood.Adapter.BannersAdapter
+import com.example.DeliveryFood.Adapter.CategoriesAdapter
+import com.example.DeliveryFood.Adapter.FoodAdapter
+import com.example.DeliveryFood.Common.Common
+import com.example.DeliveryFood.DB.DbManagerCategories
+import com.example.DeliveryFood.DB.DbManagerFood
+import com.example.DeliveryFood.DbAdapter.CategoriesDbAdapter
+import com.example.DeliveryFood.DbAdapter.FoodDbAdapter
+import com.example.DeliveryFood.Interface.RetrofitServices
+import com.example.DeliveryFood.Model.Banner
+import com.example.DeliveryFood.Model.Categories
+import com.example.DeliveryFood.Model.Products
+import com.example.DeliveryFood.databinding.ActivityMain2Binding
 import dmax.dialog.SpotsDialog
 import retrofit2.Callback
 import retrofit2.Response
-import java.lang.Exception
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -123,12 +122,12 @@ class MainActivity : AppCompatActivity() {
                     rvCategories.adapter = categoriesAdapter
 
                     val categoriesList = response.body()!!.categories
-                    if(dbManagerCategories.checkDbOnFilling()){
-                        for(i in categoriesList.indices){
+                    if (dbManagerCategories.checkDbOnFilling()) {
+                        for (i in categoriesList.indices) {
                             dbManagerCategories.updateItem(categoriesList[i].title, i)
                         }
-                    }else{
-                        for(i in categoriesList.indices){
+                    } else {
+                        for (i in categoriesList.indices) {
                             dbManagerCategories.insertToDb(categoriesList[i].title)
                         }
                     }

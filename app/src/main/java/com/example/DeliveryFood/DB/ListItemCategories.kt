@@ -1,4 +1,4 @@
-package com.example.pizzabobo.DB
+package com.example.DeliveryFood.DB
 
 class ListItemCategories {
 

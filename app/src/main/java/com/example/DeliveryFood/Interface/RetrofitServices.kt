@@ -1,7 +1,7 @@
-package com.example.pizzabobo.Interface
+package com.example.DeliveryFood.Interface
 
-import com.example.pizzabobo.Model.Categories
-import com.example.pizzabobo.Model.Products
+import com.example.DeliveryFood.Model.Categories
+import com.example.DeliveryFood.Model.Products
 import retrofit2.Call
 import retrofit2.http.GET
 import java.util.*
